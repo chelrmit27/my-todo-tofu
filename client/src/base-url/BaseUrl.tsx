@@ -1,0 +1,1 @@
+export const BASE_URL = 'https://tofu-backend-3oo1.onrender.com/api'
