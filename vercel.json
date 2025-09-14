@@ -1,6 +1,10 @@
 {
-  "installCommand": "pnpm install --no-frozen-lockfile",
+  "installCommand": "pnpm install --recursive --no-frozen-lockfile",
   "buildCommand": "pnpm run build",
-  "outputDirectory": "client/dist"
+  "outputDirectory": "client/dist",
+  "build": {
+    "env": {
+      "ROLLUP_SKIP_NODEJS_NATIVE": "1"
+    }
+  }
 }
-
