@@ -1,0 +1,5 @@
+curl -I https://my-todo-tofu.netlify.app/auth/login
+# ➜ Should return 200 OK and serve index.html
+
+curl -I https://my-todo-tofu.netlify.app/api/auth/login
+# ➜ Should proxy to Render and return the backend response headers
