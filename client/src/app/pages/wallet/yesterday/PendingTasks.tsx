@@ -132,6 +132,7 @@ const PendingTasks = () => {
         })
       );
 
+      await handleDelete();
       // Reload tasks after updates
       fetchCategoriesAndTasks();
     } catch (error) {
