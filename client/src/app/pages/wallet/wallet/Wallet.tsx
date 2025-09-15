@@ -1,6 +1,6 @@
-import React from 'react';
-import YourWallet from './YourWallet';
-import Reminder from './Reminder';
+import React from "react";
+import YourWallet from "./YourWallet";
+import Reminder from "./Reminder";
 
 const Wallet = () => {
   return (

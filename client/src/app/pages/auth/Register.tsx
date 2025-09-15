@@ -1,39 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { z } from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useTheme } from '@/context/ThemeContext';
-import toast from 'react-hot-toast';
-import { ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useTheme } from "@/context/ThemeContext";
+import toast from "react-hot-toast";
+import { ArrowLeft } from "lucide-react";
 
-import { BASE_URL } from '@/base-url/BaseUrl';
+import { BASE_URL } from "@/base-url/BaseUrl";
 
 const userRegistrationSchema = z.object({
   username: z
     .string()
-    .min(8, 'Username must be at least 8 characters')
-    .max(15, 'Username must not exceed 15 characters')
-    .regex(/^[a-zA-Z0-9]+$/, 'Username can only contain letters and digits'),
+    .min(8, "Username must be at least 8 characters")
+    .max(15, "Username must not exceed 15 characters")
+    .regex(/^[a-zA-Z0-9]+$/, "Username can only contain letters and digits"),
   email: z
     .string()
-    .email('Invalid email format')
-    .min(5, 'Email must be at least 5 characters'),
+    .email("Invalid email format")
+    .min(5, "Email must be at least 5 characters"),
   password: z
     .string()
-    .min(8, 'Password must be at least 8 characters')
-    .max(20, 'Password must not exceed 20 characters')
-    .regex(/^(?=.*[a-z])/, 'Password must contain at least one lowercase letter')
-    .regex(/^(?=.*[A-Z])/, 'Password must contain at least one uppercase letter')
-    .regex(/^(?=.*\d)/, 'Password must contain at least one digit')
-    .regex(/^(?=.*[!@#$%^&*])/, 'Password must contain at least one special character (!@#$%^&*)')
-    .regex(/^[a-zA-Z0-9!@#$%^&*]+$/, 'Password can only contain letters, digits, and special characters (!@#$%^&*)'),
-  name: z
-    .string()
-    .min(5, 'Name must be at least 5 characters')
-    .trim(),
-  profilePicture: z.string().optional().default(''),
+    .min(8, "Password must be at least 8 characters")
+    .max(20, "Password must not exceed 20 characters")
+    .regex(
+      /^(?=.*[a-z])/,
+      "Password must contain at least one lowercase letter",
+    )
+    .regex(
+      /^(?=.*[A-Z])/,
+      "Password must contain at least one uppercase letter",
+    )
+    .regex(/^(?=.*\d)/, "Password must contain at least one digit")
+    .regex(
+      /^(?=.*[!@#$%^&*])/,
+      "Password must contain at least one special character (!@#$%^&*)",
+    )
+    .regex(
+      /^[a-zA-Z0-9!@#$%^&*]+$/,
+      "Password can only contain letters, digits, and special characters (!@#$%^&*)",
+    ),
+  name: z.string().min(5, "Name must be at least 5 characters").trim(),
+  profilePicture: z.string().optional().default(""),
 });
 
 type UserRegistrationData = z.infer<typeof userRegistrationSchema>;
@@ -41,23 +50,23 @@ type UserRegistrationData = z.infer<typeof userRegistrationSchema>;
 export const Register: React.FC = () => {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
-  
+
   const [formData, setFormData] = useState<UserRegistrationData>({
-    username: '',
-    email: '',
-    password: '',
-    name: '',
-    profilePicture: '',
+    username: "",
+    email: "",
+    password: "",
+    name: "",
+    profilePicture: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Force light mode on register page
   useEffect(() => {
     const originalTheme = theme;
-    setTheme('light');
-    
+    setTheme("light");
+
     // Cleanup: restore original theme when component unmounts
     return () => {
       setTheme(originalTheme);
@@ -70,11 +79,11 @@ export const Register: React.FC = () => {
       ...prev,
       [name]: value,
     }));
-    if (error) setError('');
+    if (error) setError("");
     if (fieldErrors[name]) {
       setFieldErrors((prev) => ({
         ...prev,
-        [name]: '',
+        [name]: "",
       }));
     }
   };
@@ -95,10 +104,10 @@ export const Register: React.FC = () => {
         });
         setFieldErrors(newFieldErrors);
         setError(
-          error.issues[0]?.message || 'Please fix the validation errors',
+          error.issues[0]?.message || "Please fix the validation errors",
         );
       } else {
-        setError('An unexpected error occurred.');
+        setError("An unexpected error occurred.");
       }
       return false;
     }
@@ -112,34 +121,34 @@ export const Register: React.FC = () => {
     }
 
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
       const response = await fetch(`${BASE_URL}/auth/register/user`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
 
       const data = await response.json();
-      
+
       if (response.ok) {
-        toast.success('Registration successful!');
-        navigate('/auth/login');
+        toast.success("Registration successful!");
+        navigate("/auth/login");
       } else {
         // Show detailed error message from server
-        console.error('Registration error response:', {
+        console.error("Registration error response:", {
           status: response.status,
           statusText: response.statusText,
-          data: data
+          data: data,
         });
-        console.log('Error data structure:', JSON.stringify(data, null, 2));
-        
+        console.log("Error data structure:", JSON.stringify(data, null, 2));
+
         // Clear previous field errors
         setFieldErrors({});
-        
+
         // First priority: Handle structured validation errors from server (Zod validation)
         if (data.errors && Array.isArray(data.errors)) {
           const newFieldErrors: Record<string, string> = {};
@@ -147,60 +156,96 @@ export const Register: React.FC = () => {
             const fieldName = error.field;
             newFieldErrors[fieldName] = error.message;
           });
-          
+
           setFieldErrors(newFieldErrors);
-          setError('Please fix the validation errors below');
+          setError("Please fix the validation errors below");
           return; // Exit early to avoid other error handling
         }
-        
+
         // Handle specific error cases with helpful messages
-        const errorMessage = data.message || data.error || '';
-        
+        const errorMessage = data.message || data.error || "";
+
         // Check for specific field-related errors and provide helpful messages
-        if (errorMessage.toLowerCase().includes('username')) {
-          if (errorMessage.toLowerCase().includes('already') || errorMessage.toLowerCase().includes('exists')) {
-            setFieldErrors({ username: 'This username is already taken. Please choose a different one.' });
-            setError('Username is already taken');
-          } else if (errorMessage.toLowerCase().includes('invalid') || errorMessage.toLowerCase().includes('format')) {
-            setFieldErrors({ username: 'Username must be 3-50 characters and contain only letters, numbers, and underscores.' });
-            setError('Invalid username format');
+        if (errorMessage.toLowerCase().includes("username")) {
+          if (
+            errorMessage.toLowerCase().includes("already") ||
+            errorMessage.toLowerCase().includes("exists")
+          ) {
+            setFieldErrors({
+              username:
+                "This username is already taken. Please choose a different one.",
+            });
+            setError("Username is already taken");
+          } else if (
+            errorMessage.toLowerCase().includes("invalid") ||
+            errorMessage.toLowerCase().includes("format")
+          ) {
+            setFieldErrors({
+              username:
+                "Username must be 3-50 characters and contain only letters, numbers, and underscores.",
+            });
+            setError("Invalid username format");
           } else {
-            setFieldErrors({ username: 'Username error: ' + errorMessage });
-            setError('Username issue');
+            setFieldErrors({ username: "Username error: " + errorMessage });
+            setError("Username issue");
           }
-        } else if (errorMessage.toLowerCase().includes('email')) {
-          if (errorMessage.toLowerCase().includes('already') || errorMessage.toLowerCase().includes('exists')) {
-            setFieldErrors({ email: 'This email is already registered. Try logging in instead.' });
-            setError('Email is already registered');
-          } else if (errorMessage.toLowerCase().includes('invalid') || errorMessage.toLowerCase().includes('format')) {
-            setFieldErrors({ email: 'Please enter a valid email address.' });
-            setError('Invalid email format');
+        } else if (errorMessage.toLowerCase().includes("email")) {
+          if (
+            errorMessage.toLowerCase().includes("already") ||
+            errorMessage.toLowerCase().includes("exists")
+          ) {
+            setFieldErrors({
+              email:
+                "This email is already registered. Try logging in instead.",
+            });
+            setError("Email is already registered");
+          } else if (
+            errorMessage.toLowerCase().includes("invalid") ||
+            errorMessage.toLowerCase().includes("format")
+          ) {
+            setFieldErrors({ email: "Please enter a valid email address." });
+            setError("Invalid email format");
           } else {
-            setFieldErrors({ email: 'Email error: ' + errorMessage });
-            setError('Email issue');
+            setFieldErrors({ email: "Email error: " + errorMessage });
+            setError("Email issue");
           }
-        } else if (errorMessage.toLowerCase().includes('password')) {
-          if (errorMessage.toLowerCase().includes('weak') || errorMessage.toLowerCase().includes('strength')) {
-            setFieldErrors({ password: 'Password must contain at least 8 characters with uppercase, lowercase, number, and special character.' });
-            setError('Password too weak');
-          } else if (errorMessage.toLowerCase().includes('invalid') || errorMessage.toLowerCase().includes('format')) {
-            setFieldErrors({ password: 'Password must be 8-100 characters with uppercase, lowercase, number, and special character.' });
-            setError('Invalid password format');
+        } else if (errorMessage.toLowerCase().includes("password")) {
+          if (
+            errorMessage.toLowerCase().includes("weak") ||
+            errorMessage.toLowerCase().includes("strength")
+          ) {
+            setFieldErrors({
+              password:
+                "Password must contain at least 8 characters with uppercase, lowercase, number, and special character.",
+            });
+            setError("Password too weak");
+          } else if (
+            errorMessage.toLowerCase().includes("invalid") ||
+            errorMessage.toLowerCase().includes("format")
+          ) {
+            setFieldErrors({
+              password:
+                "Password must be 8-100 characters with uppercase, lowercase, number, and special character.",
+            });
+            setError("Invalid password format");
           } else {
-            setFieldErrors({ password: 'Password error: ' + errorMessage });
-            setError('Password issue');
+            setFieldErrors({ password: "Password error: " + errorMessage });
+            setError("Password issue");
           }
-        } else if (errorMessage.toLowerCase().includes('name')) {
-          setFieldErrors({ name: 'Name must be at least 5 characters.' });
-          setError('Invalid name format');
+        } else if (errorMessage.toLowerCase().includes("name")) {
+          setFieldErrors({ name: "Name must be at least 5 characters." });
+          setError("Invalid name format");
         } else {
           // Generic server error
-          setError(errorMessage || 'Registration failed. Please check your information and try again.');
+          setError(
+            errorMessage ||
+              "Registration failed. Please check your information and try again.",
+          );
         }
       }
     } catch (error) {
-      console.error('Network error:', error);
-      setError('Network error. Please check your connection and try again.');
+      console.error("Network error:", error);
+      setError("Network error. Please check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -229,7 +274,9 @@ export const Register: React.FC = () => {
 
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-4xl font-semibold mb-2 text-foreground">Create Account</h1>
+            <h1 className="text-4xl font-semibold mb-2 text-foreground">
+              Create Account
+            </h1>
             <p className="text-muted-foreground text-base font-light">
               Please fill in your details to get started
             </p>
@@ -238,7 +285,9 @@ export const Register: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Error Message */}
             {error && (
-              <div className="px-4 py-3 rounded-lg text-sm bg-destructive/10 text-destructive border border-destructive/20">{error}</div>
+              <div className="px-4 py-3 rounded-lg text-sm bg-destructive/10 text-destructive border border-destructive/20">
+                {error}
+              </div>
             )}
 
             {/* Username Field */}
@@ -260,7 +309,9 @@ export const Register: React.FC = () => {
                 required
               />
               {fieldErrors.username && (
-                <p className="text-destructive text-sm">{fieldErrors.username}</p>
+                <p className="text-destructive text-sm">
+                  {fieldErrors.username}
+                </p>
               )}
             </div>
 
@@ -331,7 +382,9 @@ export const Register: React.FC = () => {
                 required
               />
               {fieldErrors.password && (
-                <p className="text-destructive text-sm">{fieldErrors.password}</p>
+                <p className="text-destructive text-sm">
+                  {fieldErrors.password}
+                </p>
               )}
             </div>
 
@@ -341,13 +394,13 @@ export const Register: React.FC = () => {
               disabled={loading}
               className="w-full py-3 rounded-lg font-medium bg-[#7453AB] text-white hover:bg-[#5e4291]"
             >
-              {loading ? 'Creating account...' : 'Create Account'}
+              {loading ? "Creating account..." : "Create Account"}
             </Button>
 
             {/* Sign In Link */}
             <div className="text-center mt-2">
               <p className="text-sm text-gray-600">
-                Already have an account?{' '}
+                Already have an account?{" "}
                 <Link
                   to="/auth/login"
                   className="font-medium text-[#7453AB] hover:text-[#5e4291]"

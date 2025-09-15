@@ -1,11 +1,25 @@
-import React, { useState } from 'react';
-import Modal from '@/components/ui/Modal'; // Assuming Modal is a reusable component
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
-import axios from 'axios';
+import React, { useState } from "react";
+import Modal from "@/components/ui/Modal"; // Assuming Modal is a reusable component
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
+import axios from "axios";
 
-import { BASE_URL } from '@/base-url/BaseUrl';
+import { BASE_URL } from "@/base-url/BaseUrl";
 
-const TaskList = ({ tasks, categories, refreshTaskList }: { tasks: any[]; categories: Record<string, { name: string; color?: string }> ; refreshTaskList: () => void }) => {
+const TaskList = ({
+  tasks,
+  categories,
+  refreshTaskList,
+}: {
+  tasks: any[];
+  categories: Record<string, { name: string; color?: string }>;
+  refreshTaskList: () => void;
+}) => {
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [editedTask, setEditedTask] = useState<any | null>(null);
 
@@ -14,7 +28,9 @@ const TaskList = ({ tasks, categories, refreshTaskList }: { tasks: any[]; catego
     setEditedTask({ ...task });
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
     setEditedTask((prev: any) => ({ ...prev, [name]: value }));
   };
@@ -23,19 +39,23 @@ const TaskList = ({ tasks, categories, refreshTaskList }: { tasks: any[]; catego
     if (!editedTask || !editingTaskId) return;
 
     try {
-      console.log('Edited Task:', editedTask);
-      const token = localStorage.getItem('token');
+      console.log("Edited Task:", editedTask);
+      const token = localStorage.getItem("token");
       if (!token) {
-        alert('Authentication token not found. Please log in.');
+        alert("Authentication token not found. Please log in.");
         return;
       }
 
       // Extract date part (YYYY-MM-DD) from editedTask.date
-      const datePart = editedTask.date.split('T')[0];
+      const datePart = editedTask.date.split("T")[0];
 
       // Combine date and time, then convert to UTC ISO strings
-      const startUTC = new Date(`${datePart}T${editedTask.startHHMM}:00`).toISOString();
-      const endUTC = new Date(`${datePart}T${editedTask.endHHMM}:00`).toISOString();
+      const startUTC = new Date(
+        `${datePart}T${editedTask.startHHMM}:00`,
+      ).toISOString();
+      const endUTC = new Date(
+        `${datePart}T${editedTask.endHHMM}:00`,
+      ).toISOString();
 
       const updatedTask = {
         ...editedTask,
@@ -43,30 +63,30 @@ const TaskList = ({ tasks, categories, refreshTaskList }: { tasks: any[]; catego
         end: endUTC,
       };
 
-      console.log('Updated Task Payload:', updatedTask);
+      console.log("Updated Task Payload:", updatedTask);
 
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       };
 
       const response = await axios.patch(
         `${BASE_URL}/tasks/${editingTaskId}`,
         updatedTask,
-        config
+        config,
       );
 
-      console.log('Task updated successfully:', response.data);
+      console.log("Task updated successfully:", response.data);
       setEditingTaskId(null);
       setEditedTask(null);
 
       // Refresh task list after successful update
       refreshTaskList();
     } catch (error) {
-      console.error('Error updating task:', error);
-      alert('Failed to update task.');
+      console.error("Error updating task:", error);
+      alert("Failed to update task.");
     }
   };
 
@@ -77,16 +97,16 @@ const TaskList = ({ tasks, categories, refreshTaskList }: { tasks: any[]; catego
 
   const handleToggleDone = async (taskId: string, currentDone: boolean) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        alert('Authentication token not found. Please log in.');
+        alert("Authentication token not found. Please log in.");
         return;
       }
 
       const config = {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       };
 
@@ -95,16 +115,41 @@ const TaskList = ({ tasks, categories, refreshTaskList }: { tasks: any[]; catego
       const response = await axios.patch(
         `${BASE_URL}/tasks/${taskId}`,
         updatedTask,
-        config
+        config,
       );
 
-      console.log('Task done status toggled successfully:', response.data);
+      console.log("Task done status toggled successfully:", response.data);
 
       // Refresh task list after successful update
       refreshTaskList();
     } catch (error) {
-      console.error('Error toggling task done status:', error);
-      alert('Failed to toggle task done status.');
+      console.error("Error toggling task done status:", error);
+      alert("Failed to toggle task done status.");
+    }
+  };
+
+  const handleDeleteTask = async () => {
+    if (!editingTaskId) return;
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Authentication token not found. Please log in.");
+        return;
+      }
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      };
+      await axios.delete(`${BASE_URL}/tasks/${editingTaskId}`, config);
+      console.log("Task deleted:", editingTaskId);
+      setEditingTaskId(null);
+      setEditedTask(null);
+      refreshTaskList(); // Refresh after deletion
+    } catch (error) {
+      console.error("Error deleting task:", error);
+      alert("Failed to delete task.");
     }
   };
 
@@ -112,30 +157,40 @@ const TaskList = ({ tasks, categories, refreshTaskList }: { tasks: any[]; catego
     <div>
       <h2 className="text-2xl font-semibold mb-6">Task List</h2>
       <div className="max-h-[340px] overflow-y-auto">
-        {tasks.map((task) => (
-          <div
-            key={task._id}
-            className="grid grid-cols-12 gap-4 py-2 mb-1 border border-gray-400 rounded-sm cursor-pointer"
-            onDoubleClick={() => handleDoubleClick(task)}
-          >
-            <div className="col-span-5">
-              <input
-                type="checkbox"
-                className="ml-3 mr-6"
-                checked={task.done}
-                onChange={() => handleToggleDone(task._id, task.done)}
-              />
-              {task.title}
-            </div>
-
-            <div className="col-span-3" style={{ color: task.color }}>
-              {categories[task.categoryId]?.name || 'Unknown Category'}
-            </div>
-
-            <div className="col-span-2">{task.startHHMM}</div>
-            <div className="col-span-2">{task.endHHMM}</div>
+        {tasks.length === 0 ? (
+          // Skeleton loader when tasks are loading
+          <div className="flex flex-col gap-4 w-full px-6 py-4">
+            {[...Array(2)].map((_, idx) => (
+              <div
+                key={idx}
+                className="h-10 bg-gray-200 rounded animate-pulse"
+              ></div>
+            ))}
           </div>
-        ))}
+        ) : (
+          tasks.map((task) => (
+            <div
+              key={task._id}
+              className="grid grid-cols-12 gap-4 py-2 mb-1 border border-gray-400 rounded-sm cursor-pointer"
+              onDoubleClick={() => handleDoubleClick(task)}
+            >
+              <div className="col-span-5">
+                <input
+                  type="checkbox"
+                  className="ml-3 mr-6"
+                  checked={task.done}
+                  onChange={() => handleToggleDone(task._id, task.done)}
+                />
+                {task.title}
+              </div>
+              <div className="col-span-3" style={{ color: task.color }}>
+                {categories[task.categoryId]?.name || "Unknown Category"}
+              </div>
+              <div className="col-span-2">{task.startHHMM}</div>
+              <div className="col-span-2">{task.endHHMM}</div>
+            </div>
+          ))
+        )}
       </div>
 
       {editingTaskId && (
@@ -147,56 +202,74 @@ const TaskList = ({ tasks, categories, refreshTaskList }: { tasks: any[]; catego
             <h3 className="text-xl font-semibold mb-4">Edit Task</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Title</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Title
+                </label>
                 <input
                   type="text"
                   name="title"
-                  value={editedTask?.title || ''}
+                  value={editedTask?.title || ""}
                   onChange={handleChange}
                   className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Category</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Category
+                </label>
                 <div className="relative">
                   <Select
-                    value={editedTask?.categoryId || ''}
+                    value={editedTask?.categoryId || ""}
                     onValueChange={(value) => {
-                      setEditedTask((prev: any) => ({ ...prev, categoryId: value }));
+                      setEditedTask((prev: any) => ({
+                        ...prev,
+                        categoryId: value,
+                      }));
                     }}
                   >
                     <SelectTrigger className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full p-2.5">
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.entries(categories).map(([id, { name, color }]) => (
-                        <SelectItem key={id} value={id} className="text-sm" style={{ color }}>
-                          {name}
-                        </SelectItem>
-                      ))}
+                      {Object.entries(categories).map(
+                        ([id, { name, color }]) => (
+                          <SelectItem
+                            key={id}
+                            value={id}
+                            className="text-sm"
+                            style={{ color }}
+                          >
+                            {name}
+                          </SelectItem>
+                        ),
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Start Time</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Start Time
+                </label>
                 <input
                   type="time"
                   name="startHHMM"
-                  value={editedTask?.startHHMM || ''}
+                  value={editedTask?.startHHMM || ""}
                   onChange={handleChange}
                   className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">End Time</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  End Time
+                </label>
                 <input
                   type="time"
                   name="endHHMM"
-                  value={editedTask?.endHHMM || ''}
+                  value={editedTask?.endHHMM || ""}
                   onChange={handleChange}
                   className="bg-gray-50 border leading-none border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                 />
@@ -217,12 +290,7 @@ const TaskList = ({ tasks, categories, refreshTaskList }: { tasks: any[]; catego
                 Cancel
               </button>
               <button
-                onClick={() => {
-                  // Logic to delete the task
-                  console.log('Delete task:', editedTask);
-                  setEditingTaskId(null);
-                  setEditedTask(null);
-                }}
+                onClick={() => handleDeleteTask}
                 className="bg-red-500 text-white px-4 py-2 rounded"
               >
                 Delete

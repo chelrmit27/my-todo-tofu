@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import NewTask from './NewTask';
-import TaskList from './TaskList';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import NewTask from "./NewTask";
+import TaskList from "./TaskList";
+import axios from "axios";
 
-import { BASE_URL } from '@/base-url/BaseUrl';
+import { BASE_URL } from "@/base-url/BaseUrl";
 
 const Today = () => {
   const [tasks, setTasks] = useState<any[]>([]);
-  const [categories, setCategories] = useState<Record<string, { name: string; color?: string }>>({});
+  const [categories, setCategories] = useState<
+    Record<string, { name: string; color?: string }>
+  >({});
 
   const fetchTasksAndCategories = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        throw new Error('No token found in local storage');
+        throw new Error("No token found in local storage");
       }
 
       const config = {
@@ -21,16 +23,28 @@ const Today = () => {
       };
 
       // Fetch categories
-      const categoryResponse = await axios.get(`${BASE_URL}/categories`, config);
-      const transformedCategories = categoryResponse.data.reduce((acc: Record<string, { name: string; color?: string }>, category: any) => {
-        acc[category._id] = { name: category.name, color: category.color };
-        return acc;
-      }, {});
+      const categoryResponse = await axios.get(
+        `${BASE_URL}/categories`,
+        config,
+      );
+      const transformedCategories = categoryResponse.data.reduce(
+        (
+          acc: Record<string, { name: string; color?: string }>,
+          category: any,
+        ) => {
+          acc[category._id] = { name: category.name, color: category.color };
+          return acc;
+        },
+        {},
+      );
       setCategories(transformedCategories);
 
       // Fetch tasks
-      const today = new Date().toISOString().split('T')[0];
-      const taskResponse = await axios.get(`${BASE_URL}/tasks?date=${today}`, config);
+      const today = new Date().toISOString().split("T")[0];
+      const taskResponse = await axios.get(
+        `${BASE_URL}/tasks?date=${today}`,
+        config,
+      );
       const tasksWithColors = taskResponse.data.tasks.map((task: any) => {
         const category = transformedCategories[task.categoryId];
 
@@ -38,14 +52,14 @@ const Today = () => {
         const formatTime = (dateString: string) => {
           const date = new Date(dateString);
           const hours = date.getHours();
-          const formattedHours = hours.toString().padStart(2, '0');
-          const minutes = date.getMinutes().toString().padStart(2, '0');
+          const formattedHours = hours.toString().padStart(2, "0");
+          const minutes = date.getMinutes().toString().padStart(2, "0");
           return `${formattedHours}:${minutes}`;
         };
 
         return {
           ...task,
-          color: category?.color || 'unknown',
+          color: category?.color || "unknown",
           startHHMM: formatTime(task.start),
           endHHMM: formatTime(task.end),
         };
@@ -53,7 +67,7 @@ const Today = () => {
 
       setTasks(tasksWithColors);
     } catch (error) {
-      console.error('Error fetching categories or tasks:', error);
+      console.error("Error fetching categories or tasks:", error);
     }
   };
 
@@ -74,7 +88,11 @@ const Today = () => {
 
       <NewTask refreshTaskList={refreshTaskList} />
 
-      <TaskList tasks={tasks} categories={categories} refreshTaskList={refreshTaskList} />
+      <TaskList
+        tasks={tasks}
+        categories={categories}
+        refreshTaskList={refreshTaskList}
+      />
     </div>
   );
 };

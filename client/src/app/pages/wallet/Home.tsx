@@ -1,7 +1,7 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import TaskTab from './TaskTab';
-import { CategoryProvider } from '../../../context/CategoryContext';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import TaskTab from "./TaskTab";
+import { CategoryProvider } from "../../../context/CategoryContext";
 
 const Home = () => {
   return (

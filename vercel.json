@@ -2,9 +2,7 @@
   "installCommand": "pnpm install --recursive --no-frozen-lockfile",
   "buildCommand": "pnpm run build",
   "outputDirectory": "client/dist",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
-  ],
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "build": {
     "env": {
       "ROLLUP_SKIP_NODEJS_NATIVE": "1"

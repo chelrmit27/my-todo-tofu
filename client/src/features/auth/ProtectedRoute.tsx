@@ -1,16 +1,16 @@
-import { ReactNode } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../stores/useAuth';
+import { ReactNode } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../stores/useAuth";
 
 interface ProtectedRouteProps {
   children: ReactNode;
-  allowedRoles?: ('CUSTOMER' | 'VENDOR' | 'SHIPPER')[];
+  allowedRoles?: ("CUSTOMER" | "VENDOR" | "SHIPPER")[];
   redirectTo?: string;
 }
 
 export function ProtectedRoute({
   children,
-  redirectTo = '/auth/login',
+  redirectTo = "/auth/login",
 }: ProtectedRouteProps) {
   const { isAuth, isLoading, user } = useAuth();
   const location = useLocation();

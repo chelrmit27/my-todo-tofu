@@ -26,11 +26,12 @@ src/
 ### Basic Usage in Components
 
 ```tsx
-import useWalletStore from '../stores/useWalletStore';
+import useWalletStore from "../stores/useWalletStore";
 
 const MyComponent = () => {
-  const { spentHours, budgetHours, remainingHours, isLoading } = useWalletStore();
-  
+  const { spentHours, budgetHours, remainingHours, isLoading } =
+    useWalletStore();
+
   return (
     <div>
       <p>Spent: {spentHours}</p>
@@ -43,11 +44,11 @@ const MyComponent = () => {
 ### Triggering Data Refresh
 
 ```tsx
-import { useWalletUtils } from '../stores/useWalletUtils';
+import { useWalletUtils } from "../stores/useWalletUtils";
 
 const TaskComponent = () => {
   const { refreshWalletAfterTaskChange } = useWalletUtils();
-  
+
   const handleTaskComplete = async () => {
     // ... update task logic
     await refreshWalletAfterTaskChange(); // Refresh wallet data
@@ -58,11 +59,11 @@ const TaskComponent = () => {
 ### Manual Data Fetching
 
 ```tsx
-import useWalletStore from '../stores/useWalletStore';
+import useWalletStore from "../stores/useWalletStore";
 
 const SomeComponent = () => {
   const fetchSpentHours = useWalletStore((state) => state.fetchSpentHours);
-  
+
   useEffect(() => {
     fetchSpentHours(); // Fetch data when needed
   }, [fetchSpentHours]);

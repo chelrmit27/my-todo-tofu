@@ -4,18 +4,18 @@ import {
   useEffect,
   useCallback,
   ReactNode,
-} from 'react';
-import { useNavigate } from 'react-router-dom';
+} from "react";
+import { useNavigate } from "react-router-dom";
 
-import { BASE_URL } from '@/base-url/BaseUrl';
+import { BASE_URL } from "@/base-url/BaseUrl";
 // Constants for inactivity timeout
 const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
 const ACTIVITY_EVENTS = [
-  'mousedown',
-  'mousemove',
-  'keypress',
-  'scroll',
-  'touchstart',
+  "mousedown",
+  "mousemove",
+  "keypress",
+  "scroll",
+  "touchstart",
 ];
 
 export interface AppUser {
@@ -38,109 +38,112 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Helper functions for user management
 const getUser = async (): Promise<AppUser | null> => {
   try {
-    const token = localStorage.getItem('token');
-    console.log('🔍 Checking token:', token ? 'exists' : 'missing');
-    
+    const token = localStorage.getItem("token");
+    console.log("🔍 Checking token:", token ? "exists" : "missing");
+
     if (!token) {
-      console.log('❌ No token found');
+      console.log("❌ No token found");
       return null;
     }
 
     // Validate token with server (with fallback for development)
     try {
-      console.log('🌐 Validating token with server...');
+      console.log("🌐 Validating token with server...");
       const response = await fetch(`${BASE_URL}/auth/validate`, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
 
       if (!response.ok) {
-        console.log('🚨 Token validation failed, status:', response.status);
-        throw new Error('Token validation failed');
+        console.log("🚨 Token validation failed, status:", response.status);
+        throw new Error("Token validation failed");
       }
-      
-      console.log('✅ Token validated successfully');
+
+      console.log("✅ Token validated successfully");
     } catch (error) {
-      console.log('🚨 Token validation error:', error);
-      
-      // For development: if validation endpoint doesn't exist, 
+      console.log("🚨 Token validation error:", error);
+
+      // For development: if validation endpoint doesn't exist,
       // fallback to just checking if token and user data exist
       // Remove this fallback in production!
-      console.log('⚠️  Falling back to local token check (development only)');
+      console.log("⚠️  Falling back to local token check (development only)");
     }
 
-    const userData = localStorage.getItem('USER');
+    const userData = localStorage.getItem("USER");
     if (userData) {
       const parsedUser = JSON.parse(userData);
-      console.log('👤 Parsed user data:', parsedUser);
-      
+      console.log("👤 Parsed user data:", parsedUser);
+
       if (
         parsedUser &&
         parsedUser.id &&
         parsedUser.email &&
         parsedUser.username
       ) {
-        console.log('✅ Valid user data found');
+        console.log("✅ Valid user data found");
         return parsedUser;
       }
     }
 
-    console.log('❌ Invalid user data, cleaning up');
+    console.log("❌ Invalid user data, cleaning up");
     await removeUser();
     return null;
   } catch (error) {
-    console.error('🚨 getUser error:', error);
+    console.error("🚨 getUser error:", error);
     await removeUser();
     return null;
   }
 };
 
 const setUser = async (userData: AppUser): Promise<void> => {
-  localStorage.setItem('USER', JSON.stringify(userData));
+  localStorage.setItem("USER", JSON.stringify(userData));
 };
 
 const removeUser = async (): Promise<void> => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('USER');
-  localStorage.removeItem('lastAnalyticsUpdate');
+  localStorage.removeItem("token");
+  localStorage.removeItem("USER");
+  localStorage.removeItem("lastAnalyticsUpdate");
 };
 
 // Helper function to update weekly analytics
 const updateWeeklyAnalytics = async (): Promise<void> => {
   try {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) return;
 
     // Check if we've already updated today
-    const lastUpdate = localStorage.getItem('lastAnalyticsUpdate');
-    const today = new Date().toISOString().split('T')[0];
-    
+    const lastUpdate = localStorage.getItem("lastAnalyticsUpdate");
+    const today = new Date().toISOString().split("T")[0];
+
     if (lastUpdate === today) {
-      console.log('Weekly analytics already updated today');
+      console.log("Weekly analytics already updated today");
       return;
     }
 
-    console.log('Updating weekly analytics...');
-    
-    const response = await fetch(`${BASE_URL}/aggregation/analytics/weekly/update`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
+    console.log("Updating weekly analytics...");
+
+    const response = await fetch(
+      `${BASE_URL}/aggregation/analytics/weekly/update`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       },
-    });
+    );
 
     if (response.ok) {
-      localStorage.setItem('lastAnalyticsUpdate', today);
-      console.log('Weekly analytics updated successfully');
+      localStorage.setItem("lastAnalyticsUpdate", today);
+      console.log("Weekly analytics updated successfully");
     } else {
-      console.error('Failed to update weekly analytics:', response.statusText);
+      console.error("Failed to update weekly analytics:", response.statusText);
     }
   } catch (error) {
-    console.error('Error updating weekly analytics:', error);
+    console.error("Error updating weekly analytics:", error);
   }
 };
 
@@ -154,7 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await removeUser();
     setUserState(null);
     setIsAuth(false);
-    navigate('/');
+    navigate("/");
   }, [navigate]);
 
   const resetInactivityTimer = useCallback(() => {
@@ -171,33 +174,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const loadUser = async () => {
-      console.log('🔄 Starting auth check, isLoading:', true);
+      console.log("🔄 Starting auth check, isLoading:", true);
       setIsLoading(true);
-      
+
       try {
         const userData = await getUser();
-        console.log('👤 User data from getUser:', userData);
-        
+        console.log("👤 User data from getUser:", userData);
+
         if (userData) {
           setUserState(userData);
           setIsAuth(true);
-          console.log('✅ User authenticated successfully');
+          console.log("✅ User authenticated successfully");
           // Update weekly analytics when user loads (once per day)
           await updateWeeklyAnalytics();
         } else {
           setIsAuth(false);
-          console.log('❌ User not authenticated');
+          console.log("❌ User not authenticated");
         }
       } catch (error) {
-        console.error('🚨 Auth check error:', error);
+        console.error("🚨 Auth check error:", error);
         setIsAuth(false);
         setUserState(null);
       } finally {
         setIsLoading(false);
-        console.log('✅ Auth check complete, isLoading:', false);
+        console.log("✅ Auth check complete, isLoading:", false);
       }
     };
-    
+
     loadUser();
   }, []);
 

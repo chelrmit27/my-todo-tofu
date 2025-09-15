@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { useAuth } from '@/stores/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { useEffect } from "react";
+import { useAuth } from "@/stores/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export const Logout = () => {
   const { logout, isLoading } = useAuth();
@@ -10,7 +10,7 @@ export const Logout = () => {
     // Automatically logout when component mounts
     const performLogout = async () => {
       await logout();
-      navigate('/');
+      navigate("/");
     };
 
     performLogout();

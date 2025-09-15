@@ -1,5 +1,5 @@
-import { useCallback } from 'react';
-import useWalletStore from './useWalletStore';
+import { useCallback } from "react";
+import useWalletStore from "./useWalletStore";
 
 /**
  * Custom hook to provide wallet-related utilities
@@ -14,14 +14,17 @@ export const useWalletUtils = () => {
     try {
       await refreshData();
     } catch (error) {
-      console.error('Failed to refresh wallet data after task change:', error);
+      console.error("Failed to refresh wallet data after task change:", error);
     }
   }, [refreshData]);
 
   // Optimistic update function (use before API call for instant UI feedback)
-  const optimisticUpdateSpentHours = useCallback((hours: number) => {
-    updateSpentHours(hours);
-  }, [updateSpentHours]);
+  const optimisticUpdateSpentHours = useCallback(
+    (hours: number) => {
+      updateSpentHours(hours);
+    },
+    [updateSpentHours],
+  );
 
   return {
     refreshWalletAfterTaskChange,

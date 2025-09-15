@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import useWalletStore from '../../../../stores/useWalletStore';
+import React, { useEffect } from "react";
+import useWalletStore from "../../../../stores/useWalletStore";
 
 const YourWallet = () => {
   // Get data and actions from Zustand store
@@ -20,12 +20,14 @@ const YourWallet = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-6 text-foreground">Your Wallet</h2>
-      
+      <h2 className="text-2xl font-semibold mb-6 text-foreground">
+        Your Wallet
+      </h2>
+
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 flex justify-between items-center">
           <span>{error}</span>
-          <button 
+          <button
             onClick={clearError}
             className="text-red-500 hover:text-red-700 font-bold"
           >
@@ -33,7 +35,7 @@ const YourWallet = () => {
           </button>
         </div>
       )}
-      
+
       <div className="flex flex-row items-center justify-between px-14 mb-6">
         <div
           className="flex flex-row 
@@ -44,8 +46,18 @@ const YourWallet = () => {
         >
           <div className="flex flex-col">
             <div className="text-foreground">Budget Hours</div>
-            <div className="text-[hsl(var(--primary-green))] font-bold text-5xl">{budgetHours}</div>
-            <div className="text-[hsl(var(--primary-green))] font-bold text-3xl">hours</div>
+            {isLoading ? (
+              <div className="animate-pulse bg-gray-200 rounded h-20 w-20 mb-2"></div>
+            ) : (
+              <>
+                <div className="text-[hsl(var(--primary-green))] font-bold text-5xl">
+                  {budgetHours}
+                </div>
+                <div className="text-[hsl(var(--primary-green))] font-bold text-3xl">
+                  hours
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -58,14 +70,18 @@ const YourWallet = () => {
         >
           <div className="flex flex-col">
             <div className="text-foreground">Spent Hours</div>
-            <div className="text-[hsl(var(--primary-green))] font-bold text-5xl">
-              {isLoading ? (
-                <span className="animate-pulse">...</span>
-              ) : (
-                spentHours
-              )}
-            </div>
-            <div className="text-[hsl(var(--primary-green))] font-bold text-3xl">hours</div>
+            {isLoading ? (
+              <div className="animate-pulse bg-gray-200 rounded h-20 w-20 mb-2"></div>
+            ) : (
+              <>
+                <div className="text-[hsl(var(--primary-green))] font-bold text-5xl">
+                  {spentHours}
+                </div>
+                <div className="text-[hsl(var(--primary-green))] font-bold text-3xl">
+                  hours
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -78,14 +94,18 @@ const YourWallet = () => {
         >
           <div className="flex flex-col">
             <div className="text-foreground">Remaining</div>
-            <div className="text-[hsl(var(--primary-green))] font-bold text-5xl">
-              {isLoading ? (
-                <span className="animate-pulse">...</span>
-              ) : (
-                remainingHours
-              )}
-            </div>
-            <div className="text-[hsl(var(--primary-green))] font-bold text-3xl">hours</div>
+            {isLoading ? (
+              <div className="animate-pulse bg-gray-200 rounded h-20 w-20 mb-2"></div>
+            ) : (
+              <>
+                <div className="text-[hsl(var(--primary-green))] font-bold text-5xl">
+                  {remainingHours}
+                </div>
+                <div className="text-[hsl(var(--primary-green))] font-bold text-3xl">
+                  hours
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

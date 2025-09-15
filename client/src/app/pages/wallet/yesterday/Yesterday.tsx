@@ -1,5 +1,5 @@
-import React from 'react';
-import PendingTasks from './PendingTasks';
+import React from "react";
+import PendingTasks from "./PendingTasks";
 
 const Yesterday = () => {
   return (

@@ -1,24 +1,32 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
-import axios from 'axios';
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import axios from "axios";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 
-import { BASE_URL } from '@/base-url/BaseUrl';
+import { BASE_URL } from "@/base-url/BaseUrl";
 
 const NewTask = ({ refreshTaskList }: { refreshTaskList: () => void }) => {
   const [formData, setFormData] = useState({
-    title: '',
-    categoryId: '',
-    startHHMM: '',
-    endHHMM: '',
-    notes: '',
+    title: "",
+    categoryId: "",
+    startHHMM: "",
+    endHHMM: "",
+    notes: "",
   });
-  const [categories, setCategories] = useState<Record<string, { name: string; color?: string }>>({});
+  const [categories, setCategories] = useState<
+    Record<string, { name: string; color?: string }>
+  >({});
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        alert('Authentication token not found. Please log in.');
+        alert("Authentication token not found. Please log in.");
         return;
       }
 
@@ -29,25 +37,33 @@ const NewTask = ({ refreshTaskList }: { refreshTaskList: () => void }) => {
       };
 
       try {
-        const categoryResponse = await axios.get(`${BASE_URL}/categories`, config);
+        const categoryResponse = await axios.get(
+          `${BASE_URL}/categories`,
+          config,
+        );
         const transformedCategories = categoryResponse.data.reduce(
-          (acc: Record<string, { name: string; color?: string }>, category: any) => {
+          (
+            acc: Record<string, { name: string; color?: string }>,
+            category: any,
+          ) => {
             acc[category._id] = { name: category.name, color: category.color };
             return acc;
           },
-          {}
+          {},
         );
         setCategories(transformedCategories);
       } catch (error) {
-        console.error('Error fetching categories:', error);
-        alert('Failed to fetch categories.');
+        console.error("Error fetching categories:", error);
+        alert("Failed to fetch categories.");
       }
     };
 
     fetchCategories();
   }, []);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -55,13 +71,13 @@ const NewTask = ({ refreshTaskList }: { refreshTaskList: () => void }) => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      alert('Authentication token not found. Please log in.');
+      alert("Authentication token not found. Please log in.");
       return;
     }
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split("T")[0];
     const requestBody = {
       ...formData,
       date: today,
@@ -72,25 +88,31 @@ const NewTask = ({ refreshTaskList }: { refreshTaskList: () => void }) => {
 
     try {
       const response = await fetch(`${BASE_URL}/tasks`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(requestBody),
       });
 
       if (response.ok) {
-        alert('Task added successfully!');
-        setFormData({ title: '', categoryId: '', startHHMM: '', endHHMM: '', notes: '' });
+        alert("Task added successfully!");
+        setFormData({
+          title: "",
+          categoryId: "",
+          startHHMM: "",
+          endHHMM: "",
+          notes: "",
+        });
         refreshTaskList();
       } else {
         const errorData = await response.json();
         alert(`Failed to add task: ${errorData.message}`);
       }
     } catch (error) {
-      console.error('Error adding task:', error);
-      alert('An error occurred while adding the task.');
+      console.error("Error adding task:", error);
+      alert("An error occurred while adding the task.");
     }
   };
 
@@ -145,7 +167,12 @@ const NewTask = ({ refreshTaskList }: { refreshTaskList: () => void }) => {
                   </SelectTrigger>
                   <SelectContent>
                     {Object.entries(categories).map(([id, { name, color }]) => (
-                      <SelectItem key={id} value={id} className="text-sm" style={{ color }}>
+                      <SelectItem
+                        key={id}
+                        value={id}
+                        className="text-sm"
+                        style={{ color }}
+                      >
                         {name}
                       </SelectItem>
                     ))}
@@ -197,8 +224,8 @@ const NewTask = ({ refreshTaskList }: { refreshTaskList: () => void }) => {
           </div>
 
           <div className="flex flex-row justify-end pt-3">
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="bg-[hsl(var(--button-primary))] px-8 py-2 rounded-lg shadow-md transition-all duration-200 transform hover:scale-105 hover:-translate-y-0.5 active:scale-95 hover:shadow-lg text-white font-medium"
             >
               Add

@@ -1,7 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
 
-import { BASE_URL } from '@/base-url/BaseUrl';
+import { BASE_URL } from "@/base-url/BaseUrl";
 interface Category {
   name: string;
   color?: string;
@@ -12,24 +12,30 @@ interface CategoryContextType {
   setCategories: React.Dispatch<React.SetStateAction<Record<string, Category>>>;
 }
 
-const CategoryContext = createContext<CategoryContextType | undefined>(undefined);
+const CategoryContext = createContext<CategoryContextType | undefined>(
+  undefined,
+);
 
 export const useCategoryContext = () => {
   const context = useContext(CategoryContext);
   if (!context) {
-    throw new Error('useCategoryContext must be used within a CategoryProvider');
+    throw new Error(
+      "useCategoryContext must be used within a CategoryProvider",
+    );
   }
   return context;
 };
 
-export const CategoryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const CategoryProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [categories, setCategories] = useState<Record<string, Category>>({});
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        alert('Authentication token not found. Please log in.');
+        alert("Authentication token not found. Please log in.");
         return;
       }
 
@@ -40,20 +46,23 @@ export const CategoryProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       };
 
       try {
-        const categoryResponse = await axios.get(`${BASE_URL}/categories`, config);
+        const categoryResponse = await axios.get(
+          `${BASE_URL}/categories`,
+          config,
+        );
         const transformedCategories = categoryResponse.data.reduce(
           (acc: Record<string, Category>, category: any) => {
             acc[category._id] = { name: category.name, color: category.color };
             return acc;
           },
-          {}
+          {},
         );
         setCategories(transformedCategories);
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error("Error fetching categories:", error);
         // Only show alert if we're in a protected route context
-        if (window.location.pathname.startsWith('/app/')) {
-          alert('Failed to fetch categories.');
+        if (window.location.pathname.startsWith("/app/")) {
+          alert("Failed to fetch categories.");
         }
       }
     };

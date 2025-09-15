@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/stores/useAuth';
-import { useTheme } from '@/context/ThemeContext';
-import toast from 'react-hot-toast';
-import { ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/stores/useAuth";
+import { useTheme } from "@/context/ThemeContext";
+import toast from "react-hot-toast";
+import { ArrowLeft } from "lucide-react";
 
-import { BASE_URL } from '@/base-url/BaseUrl';
+import { BASE_URL } from "@/base-url/BaseUrl";
 interface LoginData {
   username: string;
   password: string;
@@ -25,11 +25,11 @@ interface LoginProps {
 
 export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   const [formData, setFormData] = useState<LoginData>({
-    username: '',
-    password: '',
+    username: "",
+    password: "",
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [error, setError] = useState<string>("");
   const navigate = useNavigate();
   const { setUserSession } = useAuth();
   const { theme, setTheme } = useTheme();
@@ -37,8 +37,8 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
   // Force light mode on login page
   useEffect(() => {
     const originalTheme = theme;
-    setTheme('light');
-    
+    setTheme("light");
+
     // Cleanup: restore original theme when component unmounts
     return () => {
       setTheme(originalTheme);
@@ -52,20 +52,20 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       [name]: value,
     }));
     // Clear error when user starts typing
-    if (error) setError('');
+    if (error) setError("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
       console.log(1);
       const response = await fetch(`${BASE_URL}/auth/login`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           username: formData.username,
@@ -77,53 +77,53 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
       const data = await response.json();
 
       if (response.ok) {
-        console.log('Login successful:', data);
-        console.log('User data received:', data.user);
-        console.log('Token received:', data.token);
+        console.log("Login successful:", data);
+        console.log("User data received:", data.user);
+        console.log("Token received:", data.token);
 
         try {
           // Store token first (needed by AuthProvider)
-          localStorage.setItem('token', data.token);
+          localStorage.setItem("token", data.token);
           console.log(
-            'Token stored in localStorage:',
-            localStorage.getItem('token'),
+            "Token stored in localStorage:",
+            localStorage.getItem("token"),
           );
 
           // Verify token is actually there
-          const storedToken = localStorage.getItem('token');
+          const storedToken = localStorage.getItem("token");
           console.log(
-            'Verification - token in localStorage:',
-            storedToken ? 'EXISTS' : 'MISSING',
+            "Verification - token in localStorage:",
+            storedToken ? "EXISTS" : "MISSING",
           );
 
           // Use AuthProvider to set user session
-          console.log('About to call setUserSession with:', data.user);
+          console.log("About to call setUserSession with:", data.user);
           await setUserSession(data.user);
-          console.log('User session set via AuthProvider');
+          console.log("User session set via AuthProvider");
 
           // Check if token is still there after setUserSession
-          const tokenAfterSetUser = localStorage.getItem('token');
+          const tokenAfterSetUser = localStorage.getItem("token");
           console.log(
-            'Token after setUserSession:',
-            tokenAfterSetUser ? 'EXISTS' : 'MISSING',
+            "Token after setUserSession:",
+            tokenAfterSetUser ? "EXISTS" : "MISSING",
           );
 
           onLoginSuccess?.(data.user);
 
-          console.log('About to navigate to /app/wallet');
-          navigate('/app/wallet');
-          toast.success('Login successful!');
+          console.log("About to navigate to /app/wallet");
+          navigate("/app/wallet");
+          toast.success("Login successful!");
         } catch (error) {
-          console.error('Error during login success handling:', error);
-          setError('Login succeeded but session setup failed');
+          console.error("Error during login success handling:", error);
+          setError("Login succeeded but session setup failed");
         }
       } else {
-        setError(data.message || 'Login failed');
-        console.error('Login failed:', data);
+        setError(data.message || "Login failed");
+        console.error("Login failed:", data);
       }
     } catch (error) {
-      console.error('Error during login:', error);
-      setError('Network error. Please try again.');
+      console.error("Error during login:", error);
+      setError("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -152,7 +152,9 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
 
           {/* Header */}
           <div className="mb-8 ">
-            <h1 className="text-4xl font-semibold mb-2 text-foreground">Welcome Back</h1>
+            <h1 className="text-4xl font-semibold mb-2 text-foreground">
+              Welcome Back
+            </h1>
             <p className="text-muted-foreground text-base font-light">
               Please enter your account details
             </p>
@@ -161,7 +163,9 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Error Message */}
             {error && (
-              <div className="px-4 py-3 rounded-lg text-sm bg-destructive/10 text-destructive border border-destructive/20">{error}</div>
+              <div className="px-4 py-3 rounded-lg text-sm bg-destructive/10 text-destructive border border-destructive/20">
+                {error}
+              </div>
             )}
 
             {/* Username Field */}
@@ -222,13 +226,13 @@ export const Login: React.FC<LoginProps> = ({ onLoginSuccess }) => {
               disabled={loading}
               className="w-full py-3 rounded-lg font-medium bg-[#7453AB] text-white hover:bg-[#5e4291]"
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? "Signing in..." : "Sign in"}
             </Button>
 
             {/* Sign Up Link */}
             <div className="text-center mt-2">
               <p className="text-sm text-gray-600">
-                Don&apos;t have an account?{' '}
+                Don&apos;t have an account?{" "}
                 <Link
                   to="/auth/register"
                   className="font-medium text-[#7453AB] hover:text-[#5e4291]"

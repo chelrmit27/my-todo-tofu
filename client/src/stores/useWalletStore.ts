@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
-import api from '../lib/api';
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import api from "../lib/api";
 
 // Types
 interface WalletState {
@@ -11,7 +11,7 @@ interface WalletState {
   lastUpdated: Date | null;
   // Computed values
   remainingHours: number;
-  
+
   // Actions
   fetchSpentHours: () => Promise<void>;
   updateSpentHours: (hours: number) => void;
@@ -28,7 +28,7 @@ const useWalletStore = create<WalletState>()(
       isLoading: false,
       error: null,
       lastUpdated: null,
-      
+
       // Computed value
       get remainingHours() {
         const state = get();
@@ -38,19 +38,19 @@ const useWalletStore = create<WalletState>()(
       // Actions
       fetchSpentHours: async () => {
         const state = get();
-        
+
         // Prevent multiple simultaneous calls
         if (state.isLoading) return;
 
-        set({ isLoading: true, error: null }, false, 'wallet/fetchStart');
+        set({ isLoading: true, error: null }, false, "wallet/fetchStart");
 
         try {
-          const { data } = await api.get('/tasks/today');
+          const { data } = await api.get("/tasks/today");
 
-          console.log('Zustand Store - API Response:', data);
+          console.log("Zustand Store - API Response:", data);
 
           const hours = data?.spentHours;
-          if (typeof hours === 'number' && !isNaN(hours) && hours >= 0) {
+          if (typeof hours === "number" && !isNaN(hours) && hours >= 0) {
             set(
               {
                 spentHours: hours,
@@ -59,10 +59,10 @@ const useWalletStore = create<WalletState>()(
                 error: null,
               },
               false,
-              'wallet/fetchSuccess'
+              "wallet/fetchSuccess",
             );
           } else {
-            console.warn('Invalid spentHours received:', hours);
+            console.warn("Invalid spentHours received:", hours);
             set(
               {
                 spentHours: 0,
@@ -70,31 +70,31 @@ const useWalletStore = create<WalletState>()(
                 error: null,
               },
               false,
-              'wallet/fetchInvalidData'
+              "wallet/fetchInvalidData",
             );
           }
         } catch (error) {
-          console.error('Error fetching spent hours:', error);
+          console.error("Error fetching spent hours:", error);
           set(
             {
-              error: 'Failed to fetch wallet data',
+              error: "Failed to fetch wallet data",
               isLoading: false,
             },
             false,
-            'wallet/fetchError'
+            "wallet/fetchError",
           );
         }
       },
 
       updateSpentHours: (hours: number) => {
-        if (typeof hours === 'number' && !isNaN(hours) && hours >= 0) {
+        if (typeof hours === "number" && !isNaN(hours) && hours >= 0) {
           set(
             {
               spentHours: hours,
               lastUpdated: new Date(),
             },
             false,
-            'wallet/updateSpentHours'
+            "wallet/updateSpentHours",
           );
         }
       },
@@ -104,13 +104,13 @@ const useWalletStore = create<WalletState>()(
       },
 
       clearError: () => {
-        set({ error: null }, false, 'wallet/clearError');
+        set({ error: null }, false, "wallet/clearError");
       },
     }),
     {
-      name: 'wallet-store', // For Redux DevTools
-    }
-  )
+      name: "wallet-store", // For Redux DevTools
+    },
+  ),
 );
 
 export default useWalletStore;

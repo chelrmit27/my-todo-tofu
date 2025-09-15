@@ -1,7 +1,14 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
-import axios from 'axios';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from "react";
+import axios from "axios";
 
-import { BASE_URL } from '@/base-url/BaseUrl';
+import { BASE_URL } from "@/base-url/BaseUrl";
 // Types
 interface WalletData {
   spentHours: number;
@@ -24,7 +31,7 @@ const WalletContext = createContext<WalletContextValue | undefined>(undefined);
 export const useWallet = (): WalletContextValue => {
   const context = useContext(WalletContext);
   if (!context) {
-    throw new Error('useWallet must be used within a WalletProvider');
+    throw new Error("useWallet must be used within a WalletProvider");
   }
   return context;
 };
@@ -50,9 +57,9 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
       setIsLoading(true);
       setError(null);
 
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        setError('Authentication token not found. Please log in.');
+        setError("Authentication token not found. Please log in.");
         setIsLoading(false);
         return;
       }
@@ -64,19 +71,19 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
         timeout: 10000,
       });
 
-      console.log('WalletContext - API Response:', response.data);
+      console.log("WalletContext - API Response:", response.data);
 
       const hours = response.data?.spentHours;
-      if (typeof hours === 'number' && !isNaN(hours) && hours >= 0) {
+      if (typeof hours === "number" && !isNaN(hours) && hours >= 0) {
         setSpentHours(hours);
         setLastUpdated(new Date());
       } else {
-        console.warn('Invalid spentHours received:', hours);
+        console.warn("Invalid spentHours received:", hours);
         setSpentHours(0);
       }
     } catch (error) {
-      console.error('Error fetching wallet data:', error);
-      setError('Failed to fetch wallet data');
+      console.error("Error fetching wallet data:", error);
+      setError("Failed to fetch wallet data");
       setSpentHours(0);
     } finally {
       setIsLoading(false);
@@ -85,7 +92,7 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
 
   // Manual update function for optimistic updates
   const updateSpentHours = useCallback((hours: number) => {
-    if (typeof hours === 'number' && !isNaN(hours) && hours >= 0) {
+    if (typeof hours === "number" && !isNaN(hours) && hours >= 0) {
       setSpentHours(hours);
       setLastUpdated(new Date());
     }

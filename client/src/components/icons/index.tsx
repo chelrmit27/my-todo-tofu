@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Home as LucideHomeIcon,
   Calendar as LucideCalendarIcon,
@@ -6,7 +6,7 @@ import {
   Moon as LucideMoonIcon,
   BarChart2 as LucideAnalyticsIcon,
   LogOut as LucideLogoutIcon,
-} from 'lucide-react';
+} from "lucide-react";
 
 export const HomeIcon: React.FC<{ className?: string }> = ({ className }) => (
   <LucideHomeIcon className={className} />

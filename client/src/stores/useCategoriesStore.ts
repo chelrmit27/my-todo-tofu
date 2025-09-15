@@ -1,6 +1,6 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
-import api from '../lib/api';
+import { create } from "zustand";
+import { devtools } from "zustand/middleware";
+import api from "../lib/api";
 
 // Types
 export interface Category {
@@ -15,11 +15,16 @@ interface CategoriesState {
   isLoading: boolean;
   error: string | null;
   lastFetched: Date | null;
-  
+
   // Actions
   fetchCategories: () => Promise<void>;
-  createCategory: (categoryData: Omit<Category, '_id' | 'userId'>) => Promise<void>;
-  updateCategory: (id: string, categoryData: Partial<Category>) => Promise<void>;
+  createCategory: (
+    categoryData: Omit<Category, "_id" | "userId">,
+  ) => Promise<void>;
+  updateCategory: (
+    id: string,
+    categoryData: Partial<Category>,
+  ) => Promise<void>;
   deleteCategory: (id: string) => Promise<void>;
   clearError: () => void;
 }
@@ -38,10 +43,10 @@ const useCategoriesStore = create<CategoriesState>()(
         const state = get();
         if (state.isLoading) return;
 
-        set({ isLoading: true, error: null }, false, 'categories/fetchStart');
+        set({ isLoading: true, error: null }, false, "categories/fetchStart");
 
         try {
-          const { data } = await api.get('/categories');
+          const { data } = await api.get("/categories");
 
           set(
             {
@@ -51,50 +56,66 @@ const useCategoriesStore = create<CategoriesState>()(
               error: null,
             },
             false,
-            'categories/fetchSuccess'
+            "categories/fetchSuccess",
           );
         } catch (error) {
-          console.error('Failed loading categories', error);
+          console.error("Failed loading categories", error);
           set(
             {
-              error: 'Failed to load categories',
+              error: "Failed to load categories",
               isLoading: false,
             },
             false,
-            'categories/fetchError'
+            "categories/fetchError",
           );
         }
       },
 
       createCategory: async (categoryData) => {
         try {
-          const { data } = await api.post<Category>('/categories', categoryData);
+          const { data } = await api.post<Category>(
+            "/categories",
+            categoryData,
+          );
           set(
             (state) => ({
               categories: [...state.categories, data],
             }),
             false,
-            'categories/createSuccess'
+            "categories/createSuccess",
           );
         } catch (error) {
-          console.error('Failed to create category', error);
-          set({ error: 'Failed to create category' }, false, 'categories/createError');
+          console.error("Failed to create category", error);
+          set(
+            { error: "Failed to create category" },
+            false,
+            "categories/createError",
+          );
         }
       },
 
       updateCategory: async (id, categoryData) => {
         try {
-          const { data } = await api.patch<Category>(`/categories/${id}`, categoryData);
+          const { data } = await api.patch<Category>(
+            `/categories/${id}`,
+            categoryData,
+          );
           set(
             (state) => ({
-              categories: state.categories.map((c) => (c._id === data._id ? data : c)),
+              categories: state.categories.map((c) =>
+                c._id === data._id ? data : c,
+              ),
             }),
             false,
-            'categories/updateSuccess'
+            "categories/updateSuccess",
           );
         } catch (error) {
-          console.error('Failed to update category', error);
-          set({ error: 'Failed to update category' }, false, 'categories/updateError');
+          console.error("Failed to update category", error);
+          set(
+            { error: "Failed to update category" },
+            false,
+            "categories/updateError",
+          );
         }
       },
 
@@ -106,22 +127,26 @@ const useCategoriesStore = create<CategoriesState>()(
               categories: state.categories.filter((c) => c._id !== id),
             }),
             false,
-            'categories/deleteSuccess'
+            "categories/deleteSuccess",
           );
         } catch (error) {
-          console.error('Failed to delete category', error);
-          set({ error: 'Failed to delete category' }, false, 'categories/deleteError');
+          console.error("Failed to delete category", error);
+          set(
+            { error: "Failed to delete category" },
+            false,
+            "categories/deleteError",
+          );
         }
       },
 
       clearError: () => {
-        set({ error: null }, false, 'categories/clearError');
+        set({ error: null }, false, "categories/clearError");
       },
     }),
     {
-      name: 'categories-store',
-    }
-  )
+      name: "categories-store",
+    },
+  ),
 );
 
 export default useCategoriesStore;

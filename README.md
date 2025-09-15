@@ -59,6 +59,7 @@ The analytics module tracks time distribution across different categories, provi
 
 <span style="color:#64B5F6"><strong>Application Interface Structure</strong></span> <br/>
 The application is organized into focused pages including:
+
 - A **Time Wallet** dashboard that visualizes available time as a resource
 - **Daily task management** interfaces
 - **Historical review** capabilities for incomplete tasks
@@ -91,20 +92,24 @@ By visualizing time as a finite resource similar to financial budgeting, users d
 ### d. Technology Stack and Implementation Methods
 
 <span style="color:#64B5F6"><strong>Frontend Development</strong></span> <br/>
+
 - React (via Vite)
 - TailwindCSS
 - FullCalendar (drag-and-drop scheduling)
 
 <span style="color:#64B5F6"><strong>Backend Infrastructure</strong></span> <br/>
+
 - Node.js (Express.js)
 - MongoDB (data storage)
 - REST API (authentication, task management, etc.)
 
 <span style="color:#64B5F6"><strong>State and Data Management</strong></span> <br/>
+
 - Zustand (state management)
 - date-fns (date utilities)
 
 <span style="color:#64B5F6"><strong>Deployment and Hosting</strong></span> <br/>
+
 - Frontend: **Netlify** – [https://my-todo-tofu.netlify.app](https://my-todo-tofu.netlify.app)
 - Backend: **Render** – [https://tofu-backend-3oo1.onrender.com](https://tofu-backend-3oo1.onrender.com)
 
@@ -114,12 +119,14 @@ By visualizing time as a finite resource similar to financial budgeting, users d
 
 <span style="color:#64B5F6"><strong>Architectural Overview</strong></span> <br/>
 Todo Tofu follows a **client-server** architecture:
+
 - Frontend: React SPA
 - Backend: Express.js REST API
 - JSON-based data exchange
 - Secure token-based authentication
 
 <span style="color:#64B5F6"><strong>MongoDB Collections</strong></span> <br/>
+
 - **Users**: Credentials, preferences, settings
 - **Tasks**: Title, description, duration, category, status
 - **Categories**: Labels, colors, organizational tags
@@ -132,11 +139,11 @@ Todo Tofu follows a **client-server** architecture:
 
 ### a. If you had more time, what would you expand?
 
-- Allow users to **import their academic timetables** directly into the calendar system for **comprehensive schedule management**.  
-- Add **collaborative features** like shared to-do lists or peer check-ins for **group projects** to better reflect university life dynamics.  
-- **Polish the UI** animations and transitions for **smoother user experience** and **enhance mobile responsiveness** across different devices.  
-- Implement **weekly and monthly planning views** with multi-device syncing capabilities for **broader schedule perspective**.  
-- Provide **detailed control** over **reminders and notification** settings, including do-not-disturb blocks and custom encouragement messages.  
+- Allow users to **import their academic timetables** directly into the calendar system for **comprehensive schedule management**.
+- Add **collaborative features** like shared to-do lists or peer check-ins for **group projects** to better reflect university life dynamics.
+- **Polish the UI** animations and transitions for **smoother user experience** and **enhance mobile responsiveness** across different devices.
+- Implement **weekly and monthly planning views** with multi-device syncing capabilities for **broader schedule perspective**.
+- Provide **detailed control** over **reminders and notification** settings, including do-not-disturb blocks and custom encouragement messages.
 - Develop smart scheduling features that **dynamically allocate tasks** based on **user routines** and preferred **focus hours**.
 
 ### b. If you integrate AI APIs more for your app, what would you do?
@@ -148,7 +155,6 @@ I would focus on **three main areas**:
 - **Balance Detection & Advice**: AI could analyze category breakdown and streak trends to provide **personalized life-balance feedback** with contextual suggestions such as "You've spent 80% of time on work this week. Consider adding a rest or social task."
 
 - **Natural Language Task Entry**: Integrate simple NLP functionality to allow users to **input tasks using natural language** like "Finish design report tomorrow at 3pm for 2 hours" and **automatically** convert that input into **scheduled tasks** with appropriate **reminders** and **calendar** entries.
-
 
 ## ✅ Checklist
 

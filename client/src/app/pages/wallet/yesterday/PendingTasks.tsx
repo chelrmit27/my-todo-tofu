@@ -1,20 +1,22 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import React from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-import { BASE_URL } from '@/base-url/BaseUrl';
+import { BASE_URL } from "@/base-url/BaseUrl";
 
 const PendingTasks = () => {
   const [tasks, setTasks] = useState<any[]>([]);
-  const [categories, setCategories] = useState<Record<string, { name: string; color?: string }>>({});
+  const [categories, setCategories] = useState<
+    Record<string, { name: string; color?: string }>
+  >({});
   const [loading, setLoading] = useState(true);
 
   const fetchCategoriesAndTasks = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        throw new Error('No token found in local storage');
+        throw new Error("No token found in local storage");
       }
 
       const config = {
@@ -22,19 +24,31 @@ const PendingTasks = () => {
       };
 
       // Fetch categories
-      const categoryResponse = await axios.get(`${BASE_URL}/categories`, config);
-      const transformedCategories = categoryResponse.data.reduce((acc: Record<string, { name: string; color?: string }>, category: any) => {
-        acc[category._id] = { name: category.name, color: category.color };
-        return acc;
-      }, {});
+      const categoryResponse = await axios.get(
+        `${BASE_URL}/categories`,
+        config,
+      );
+      const transformedCategories = categoryResponse.data.reduce(
+        (
+          acc: Record<string, { name: string; color?: string }>,
+          category: any,
+        ) => {
+          acc[category._id] = { name: category.name, color: category.color };
+          return acc;
+        },
+        {},
+      );
       setCategories(transformedCategories);
 
       // Fetch tasks
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
-      const formattedDate = yesterday.toISOString().split('T')[0];
+      const formattedDate = yesterday.toISOString().split("T")[0];
       //const formattedDate = '2025-09-09'
-      const taskResponse = await axios.get(`${BASE_URL}/tasks?date=${formattedDate}&done=false`, config);
+      const taskResponse = await axios.get(
+        `${BASE_URL}/tasks?date=${formattedDate}&done=false`,
+        config,
+      );
       const tasksWithColors = taskResponse.data.tasks.map((task: any) => {
         const category = categories[task.categoryId];
 
@@ -42,15 +56,15 @@ const PendingTasks = () => {
         const formatTime = (dateString: string) => {
           const date = new Date(dateString);
           const hours = date.getHours();
-          const formattedHours = hours.toString().padStart(2, '0');
-          const minutes = date.getMinutes().toString().padStart(2, '0');
-          const period = hours >= 12 ? 'PM' : 'AM';
+          const formattedHours = hours.toString().padStart(2, "0");
+          const minutes = date.getMinutes().toString().padStart(2, "0");
+          const period = hours >= 12 ? "PM" : "AM";
           return `${formattedHours}:${minutes} ${period}`;
         };
 
         return {
           ...task,
-          color: category?.color || 'unknown',
+          color: category?.color || "unknown",
           startHHMM: formatTime(task.start),
           endHHMM: formatTime(task.end),
         };
@@ -59,9 +73,9 @@ const PendingTasks = () => {
       setTasks(tasksWithColors);
 
       // Console log tasks with their colors
-      console.log('Tasks with colors:', tasksWithColors);
+      console.log("Tasks with colors:", tasksWithColors);
     } catch (error) {
-      console.error('Error fetching categories or tasks:', error);
+      console.error("Error fetching categories or tasks:", error);
     } finally {
       setLoading(false);
     }
@@ -73,9 +87,9 @@ const PendingTasks = () => {
 
   const handleDelete = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        throw new Error('No token found in local storage');
+        throw new Error("No token found in local storage");
       }
 
       const config = {
@@ -85,25 +99,21 @@ const PendingTasks = () => {
       const updatedTasks = tasks.filter((task) => task.selected);
       await Promise.all(
         updatedTasks.map((task) =>
-          axios.patch(
-            `${BASE_URL}/tasks/${task._id}`,
-            { done: true },
-            config
-          )
-        )
+          axios.patch(`${BASE_URL}/tasks/${task._id}`, { done: true }, config),
+        ),
       );
 
       setTasks((prevTasks) => prevTasks.filter((task) => !task.selected));
     } catch (error) {
-      console.error('Error updating tasks as done:', error);
+      console.error("Error updating tasks as done:", error);
     }
   };
 
   const handlePutBack = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        throw new Error('No token found in local storage');
+        throw new Error("No token found in local storage");
       }
 
       const config = {
@@ -118,25 +128,33 @@ const PendingTasks = () => {
           const end = new Date(task.end);
 
           // Update only the date part to today's date
-          start.setFullYear(today.getFullYear(), today.getMonth(), today.getDate());
-          end.setFullYear(today.getFullYear(), today.getMonth(), today.getDate());
+          start.setFullYear(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate(),
+          );
+          end.setFullYear(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate(),
+          );
 
           return axios.patch(
             `${BASE_URL}/tasks/${task._id}`,
             {
               start: start.toISOString(),
               end: end.toISOString(),
+              done: false,
             },
-            config
+            config,
           );
-        })
+        }),
       );
 
-      await handleDelete();
       // Reload tasks after updates
       fetchCategoriesAndTasks();
     } catch (error) {
-      console.error('Error updating tasks to today:', error);
+      console.error("Error updating tasks to today:", error);
     }
   };
 
@@ -144,12 +162,19 @@ const PendingTasks = () => {
     return (
       <div>
         <h2 className="text-2xl font-semibold mb-6">Pending Tasks</h2>
-        <div>Loading tasks...</div>
+        <div className="flex flex-col gap-4 w-full px-6 py-4">
+          {[...Array(2)].map((_, idx) => (
+            <div
+              key={idx}
+              className="w-full h-12 bg-gray-200 rounded animate-pulse"
+            ></div>
+          ))}
+        </div>
       </div>
     );
   }
 
-  if (tasks.length === 0){
+  if (tasks.length === 0) {
     return (
       <div>
         <h2 className="text-2xl font-semibold mb-6">Pending Tasks</h2>
@@ -160,7 +185,7 @@ const PendingTasks = () => {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -181,19 +206,18 @@ const PendingTasks = () => {
                   onChange={(e) => {
                     setTasks((prevTasks) =>
                       prevTasks.map((t) =>
-                        t._id === task._id ? { ...t, selected: e.target.checked } : t
-                      )
+                        t._id === task._id
+                          ? { ...t, selected: e.target.checked }
+                          : t,
+                      ),
                     );
                   }}
                 />
                 {task.title}
               </div>
 
-              <div
-                className="col-span-3"
-                style={{ color: task.color }}
-              >
-                {categories[task.categoryId]?.name || 'Unknown Category'}
+              <div className="col-span-3" style={{ color: task.color }}>
+                {categories[task.categoryId]?.name || "Unknown Category"}
               </div>
 
               <div className="col-span-2">{task.startHHMM}</div>
