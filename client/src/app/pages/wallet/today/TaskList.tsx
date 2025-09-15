@@ -290,7 +290,7 @@ const TaskList = ({
                 Cancel
               </button>
               <button
-                onClick={() => handleDeleteTask}
+                onClick={handleDeleteTask}
                 className="bg-red-500 text-white px-4 py-2 rounded"
               >
                 Delete
